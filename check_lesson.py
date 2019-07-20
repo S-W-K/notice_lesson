@@ -138,9 +138,3 @@ class NoticeYou:
             print('Something crushed down')
         else:
             print('Send email successfully')
-
-
-if __name__ == '__main__':
-    NY = NoticeYou()
-    schedule = NY.check()
-    NY.notice_by_email(to='s979612095@gmail.com', schedule=schedule)

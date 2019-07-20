@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
 # @Author: S_W_K
-
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-import time
-from lxml import etree
-import requests
-from requests.cookies import RequestsCookieJar
-import datetime
-import keyring
 import yagmail
+import datetime
+from requests.cookies import RequestsCookieJar
+import requests
+from lxml import etree
+from selenium.webdriver.chrome.options import Options
+from selenium import webdriver
+import base64
+import pickle
 
 
 class NoticeYou:
@@ -19,10 +18,14 @@ class NoticeYou:
         self.driver = webdriver.Chrome(options=chrome_options)
 
     def register(self, student_id, password):
-        keyring.set_password('IbarakiUniv', student_id, password)
+        student_id = student_id.encode('utf-8')
+        student_id = base64.b64encode(student_id)
+        password = password.encode('utf-8')
+        password = base64.b64encode(password)
+        with open('IbarakiUniv.pkl', 'wb') as f:
+            pickle.dump([student_id, password], f)
 
     def login(self, id_, password_):
-
         request_url = 'https://idc.ibaraki.ac.jp/portal/Login.aspx'
         id_ = id_
         password_ = password_
@@ -93,9 +96,12 @@ class NoticeYou:
                 jigen = tr.find('.//td[3]')
                 yield No.text, date.text, jigen.text
 
-    def check(self, id_, days=1, password=None):
+    def check(self, id_=None, days=1, password=None):
         if password == None:
-            password = keyring.get_password('IbarakiUniv', id_)
+            with open('./IbarakiUniv.pkl', 'rb') as f:
+                id_password = pickle.load(f)
+            id_ = base64.b64decode(id_password[0]).decode('utf-8')
+            password = base64.b64decode(id_password[1]).decode('utf-8')
         page_source, cookies = self.login(id_, password)
         subject_dic = self.get_subject_schedule(page_source)
 
@@ -108,14 +114,21 @@ class NoticeYou:
         self.driver.close()
         return schedule
 
-    def register_email(self, adress, password):
-        yagmail.SMTP(adress, password)
+    def register_email(self, address, password):
+        address = address.encode('utf-8')
+        address = base64.b64encode(address)
+        password = password.encode('utf-8')
+        password = base64.b64encode(password)
+        with open('email.pkl', 'wb') as f:
+            pickle.dump([address, password], f)
 
-    def notice_by_email(self, from_, to, schedule, password=None):
+    def notice_by_email(self, to, schedule, from_=None, password=None):
         if password == None:
-            yag = yagmail.SMTP(from_)
-        else:
-            yag = yagmail.SMTP(from_, password)
+            with open('./email.pkl', 'rb') as f:
+                from_password = pickle.load(f)
+            from_ = base64.b64decode(from_password[0]).decode('utf-8')
+            password = base64.b64decode(from_password[1]).decode('utf-8')
+        yag = yagmail.SMTP(from_, password)
 
         if len(schedule) == 0:
             schedule = ['授業ないよ!!!!!!!!!!!!!']
@@ -125,3 +138,9 @@ class NoticeYou:
             print('Something crushed down')
         else:
             print('Send email successfully')
+
+
+if __name__ == '__main__':
+    NY = NoticeYou()
+    schedule = NY.check()
+    NY.notice_by_email(to='s979612095@gmail.com', schedule=schedule)

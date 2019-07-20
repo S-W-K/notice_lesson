@@ -3,9 +3,10 @@
 
 from check_lesson import NoticeYou
 
-if __name__ == '__main__':
-    NY = NoticeYou()
-    a = NY.check(id_='student_id',password='student_password')
-    NY.notice_by_email(from_='from_email_address',
-                       to='to_email_address',
-                       schedule=a,password='YourEmailPassword')
+# register only need do once
+# NY.register(YourStudentID,StudentID_password)
+# NY.register_email(YourEmailAdress,EmailAdress_password)
+
+NY = NoticeYou()
+schedule = NY.check()
+NY.notice_by_email(to='s979612095@gmail.com', schedule=schedule)

@@ -9,4 +9,4 @@ from check_lesson import NoticeYou
 
 NY = NoticeYou()
 schedule = NY.check()
-NY.notice_by_email(to='s979612095@gmail.com', schedule=schedule)
+NY.notice_by_email(to='to_email_address', schedule=schedule)

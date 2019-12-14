@@ -114,7 +114,7 @@ class NoticeYou:
                 info = '%s: 第%s回,%s,%s' % (name, No, date, jigen)
                 schedule.append(info)
 
-        self.driver.close()
+        self.driver.quit()
         return schedule
 
     def register_email(self, address, password):

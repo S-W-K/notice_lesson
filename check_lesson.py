@@ -50,9 +50,8 @@ class NoticeYou:
         jar = RequestsCookieJar()
         for cookie in cookies:
             jar.set(cookie['name'], cookie['value'])
-        page_source = self.driver.page_source
 
-        return page_source, jar
+        return jar
 
     def if_tomorrow(self, date_str, days):
         weekday_dic = {}
@@ -102,7 +101,11 @@ class NoticeYou:
                 id_password = pickle.load(f)
             id_ = base64.b64decode(id_password[0]).decode('utf-8')
             password = base64.b64decode(id_password[1]).decode('utf-8')
-        page_source, cookies = self.login(id_, password)
+        cookies = self.login(id_, password)
+
+        request_url = 'https://idc.ibaraki.ac.jp/portal/StudentApp/Top.aspx'
+        response = requests.get(request_url, cookies=cookies)
+        page_source = response.text
         subject_dic = self.get_subject_schedule(page_source)
 
         schedule = []

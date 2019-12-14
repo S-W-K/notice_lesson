@@ -17,10 +17,10 @@ NY = NoticeYou()
 schedule = NY.check(id_='student_id',password='student_password')
 NY.notice_by_email(from_='from_email_address',
                        to='to_email_address',
-                       schedule=schedule,password='YourEmailPassword')
+                       schedule=schedule,password='YourFromEmailPassword')
 ```
 ## Register
-パスワードをスクリプトにそのまま保存したくない方は，`register`と`register_email`関数を使ってください．
+授業日程の発送に使うEmailのパスワードをスクリプトにそのまま保存したくない方は，`register`と`register_email`関数を使ってください．
 ```python
 # register your student id and password
 NY.register(student_id,student_password)
